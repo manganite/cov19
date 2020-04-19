@@ -1,1 +1,1 @@
-txt = "Select a country and see the forecast"
+txt = "Select a country and see the data"

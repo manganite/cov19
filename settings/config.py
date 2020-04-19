@@ -1,7 +1,7 @@
 import os
 
 # App settings
-name = "Virus Forecaster"
+name = "Covid-19 Data"
 
 host = "0.0.0.0"
 
@@ -9,7 +9,7 @@ port = int(os.environ.get("PORT", 5000))
 
 debug = False
 
-contacts = "https://0.0.0.0"
+data = "https://github.com/CSSEGISandData/COVID-19"
 
 code = "https://github.com/mdipietro09/App_VirusForecaster"
 

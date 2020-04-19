@@ -22,7 +22,7 @@ app.title = config.name
 # Navbar
 navbar = dbc.Nav(className="nav nav-pills", children=[
     # logo/home
-    dbc.NavItem(html.Img(src=app.get_asset_url("logo.PNG"), height="40px")),
+    #dbc.NavItem(html.Img(src=app.get_asset_url("logo.PNG"), height="40px")),
 
     # about
     dbc.NavItem(html.Div([
@@ -34,10 +34,10 @@ navbar = dbc.Nav(className="nav nav-pills", children=[
 
     # links
     dbc.DropdownMenu(label="Links", nav=True, children=[
-        dbc.DropdownMenuItem([html.I(className="fa fa-linkedin"),
-                              "  Contacts"], href=config.contacts, target="_blank"),
+        dbc.DropdownMenuItem([html.I(className="fa fa-github"),
+                              "  Original data"], href=config.data, target="_blank"),
         dbc.DropdownMenuItem(
-            [html.I(className="fa fa-github"), "  Code"], href=config.code, target="_blank")
+            [html.I(className="fa fa-github"), "  Original code"], href=config.code, target="_blank")
     ])
 ])
 
