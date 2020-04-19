@@ -69,3 +69,10 @@ class Model():
 
         # add diff
         self.dtf = self.add_diff(self.dtf)
+
+    def add_deaths(self, mortality):
+        self.dtf["deaths"] = self.dtf[["deaths", "forecast"]].apply(lambda x:
+                                                                    mortality *
+                                                                    x[1] if np.isnan(
+                                                                        x[0]) else x[0],
+                                                                    axis=1)

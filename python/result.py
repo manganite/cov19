@@ -32,12 +32,17 @@ class Result():
         fig.add_trace(go.Scatter(
             x=self.dtf.index, y=self.dtf["data"], mode='markers', name='data', line={"color": "black"}))
         fig.add_trace(go.Scatter(
-            x=self.dtf.index, y=self.dtf["forecast"], mode='none', name='forecast', fill='tozeroy'))
+            x=self.dtf.index, y=self.dtf["forecast"], mode='none', name='extrapolation', fill='tozeroy'))
+        fig.add_trace(go.Bar(x=self.dtf.index,
+                             y=self.dtf["deaths"], name='deaths', marker_color='red'))
+
         # add slider
         fig.update_xaxes(rangeslider_visible=True)
+
         # set background color
         fig.update_layout(plot_bgcolor='white',
                           autosize=False, width=1000, height=550)
+
         # add vline
         fig.add_shape({"x0": today, "x1": today, "y0": 0, "y1": self.dtf["forecast"].max(),
                        "type": "line", "line": {"width": 2, "dash": "dot"}})
@@ -51,12 +56,15 @@ class Result():
         fig.add_trace(go.Bar(
             x=self.dtf.index, y=self.dtf["delta_data"], name='data', marker_color='black'))
         fig.add_trace(go.Scatter(
-            x=self.dtf.index, y=self.dtf["delta_forecast"], mode='none', name='forecast', fill='tozeroy'))
+            x=self.dtf.index, y=self.dtf["delta_forecast"], mode='none', name='extrapolation', fill='tozeroy'))
+
         # add slider
         fig.update_xaxes(rangeslider_visible=True)
+
         # set background color
         fig.update_layout(plot_bgcolor='white',
                           autosize=False, width=1000, height=550)
+
         # add vline
         fig.add_shape({"x0": today, "x1": today, "y0": 0, "y1": self.dtf["delta_forecast"].max(),
                        "type": "line", "line": {"width": 2, "dash": "dot"}})

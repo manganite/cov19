@@ -66,7 +66,7 @@ app.layout = dbc.Container(fluid=True, children=[
 
         # plots
         dbc.Col(md=9, children=[
-            dbc.Col(html.H4("Forecast 30 days from today"),
+            dbc.Col(html.H4("Data + Extrapolation 30 days from today"),
                     width={"size": 6, "offset": 3}),
             dbc.Tabs(className="nav nav-pills", children=[
                 dbc.Tab(dcc.Graph(id="plot-total"), label="Total cases"),
@@ -96,7 +96,7 @@ def plot_total_cases(country):
     data.process_data(country)
     model = Model(data.dtf)
     model.forecast()
-    #model.add_deaths(data.mortality)
+    model.add_deaths(data.mortality)
     result = Result(model.dtf)
     return result.plot_total(model.today)
 
@@ -106,7 +106,7 @@ def plot_active_cases(country):
     data.process_data(country)
     model = Model(data.dtf)
     model.forecast()
-    #model.add_deaths(data.mortality)
+    model.add_deaths(data.mortality)
     result = Result(model.dtf)
     return result.plot_active(model.today)
 
@@ -116,7 +116,7 @@ def render_output_panel(country):
     data.process_data(country)
     model = Model(data.dtf)
     model.forecast()
-    #model.add_deaths(data.mortality)
+    model.add_deaths(data.mortality)
     result = Result(model.dtf)
     peak_day, num_max, total_cases_until_today, total_cases_in_30days, active_cases_today, active_cases_in_30days = result.get_panel()
     peak_color = "white" if model.today > peak_day else "red"
