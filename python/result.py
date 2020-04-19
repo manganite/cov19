@@ -20,10 +20,10 @@ class Result():
 
     @staticmethod
     def calculate_max(dtf):
-        total_cases_until_today = dtf["data"].max()
-        total_cases_in_30days = dtf["forecast"].max()
-        active_cases_today = dtf["delta_data"].max()
-        active_cases_in_30days = dtf["delta_forecast"].max()
+        total_cases_until_today = dtf["data"].iat[-30]
+        total_cases_in_30days = dtf["forecast"].iat[-1]
+        active_cases_today = dtf["delta_data"].iat[-30]
+        active_cases_in_30days = dtf["delta_forecast"].iat[-1]
         return total_cases_until_today, total_cases_in_30days, active_cases_today, active_cases_in_30days
 
     def plot_total(self, today):
