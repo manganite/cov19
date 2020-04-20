@@ -67,7 +67,7 @@ app.layout = dbc.Container(fluid=True, children=[
         # plots
         dbc.Col(md=9, children=[
             dbc.Col(html.H4("Data + Extrapolation 30 days from today"),
-                    width={"size": 6, "offset": 3}),
+                    width={"size": 6, "offset": 1}),
             dbc.Tabs(className="nav nav-pills", children=[
                 dbc.Tab(dcc.Graph(id="plot-total"), label="Total cases"),
                 dbc.Tab(dcc.Graph(id="plot-active"), label="Active cases")

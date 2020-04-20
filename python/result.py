@@ -44,10 +44,24 @@ class Result():
                           autosize=False, width=1000, height=550)
 
         # add vline
-        fig.add_shape({"x0": today, "x1": today, "y0": 0, "y1": self.dtf["forecast"].max(),
-                       "type": "line", "line": {"width": 2, "dash": "dot"}})
-        fig.add_trace(go.Scatter(x=[today], y=[self.dtf["forecast"].max()], text=[
-                      "today"], mode="text", line={"color": "green"}, showlegend=False))
+        fig.add_shape({
+            "x0": today,
+            "x1": today,
+            "y0": 0,
+            "y1": self.dtf["forecast"].max(),
+            "type": "line",
+            "line": {"width": 2, "dash": "dot"}
+        })
+        fig.add_trace(go.Scatter(
+            x=[today],
+            y=[self.dtf["forecast"].max()],
+            text=["today"],
+            mode="text",
+            #line={"color": "green"},
+            textposition="top center",
+            hoverinfo="none",
+            showlegend=False
+        ))
         return fig
 
     def plot_active(self, today):
@@ -66,10 +80,24 @@ class Result():
                           autosize=False, width=1000, height=550)
 
         # add vline
-        fig.add_shape({"x0": today, "x1": today, "y0": 0, "y1": self.dtf["delta_forecast"].max(),
-                       "type": "line", "line": {"width": 2, "dash": "dot"}})
-        fig.add_trace(go.Scatter(x=[today], y=[self.dtf["delta_forecast"].max()], text=[
-                      "today"], mode="text", line={"color": "green"}, showlegend=False))
+        fig.add_shape({
+            "x0": today,
+            "x1": today,
+            "y0": 0,
+            "y1": self.dtf["delta_forecast"].max(),
+            "type": "line",
+            "line": {"width": 2, "dash": "dot"}
+        })
+        fig.add_trace(go.Scatter(
+            x=[today],
+            y=[self.dtf["delta_forecast"].max()],
+            text=["today"],
+            mode="text",
+            #line={"color": "green"},
+            textposition="top center",
+            hoverinfo="none",
+            showlegend=False
+        ))
         return fig
 
     def get_panel(self):
