@@ -29,19 +29,50 @@ class Result():
     def plot_total(self, today):
         # main plots
         fig = go.Figure()
+
         fig.add_trace(go.Scatter(
-            x=self.dtf.index, y=self.dtf["data"], mode='markers', name='data', line={"color": "black"}))
+            x=self.dtf.index,
+            y=self.dtf["data"],
+            mode='markers',
+            name='data',
+            marker_color='orange'
+        ))
+
         fig.add_trace(go.Scatter(
-            x=self.dtf.index, y=self.dtf["forecast"], mode='none', name='extrapolation', fill='tozeroy'))
-        fig.add_trace(go.Bar(x=self.dtf.index,
-                             y=self.dtf["deaths"], name='deaths', marker_color='red'))
+            x=self.dtf.index,
+            y=self.dtf["forecast"],
+            mode='none',
+            name='extrapolation',
+            fill='tozeroy',
+            fillcolor='rgba(120, 100, 170, 0.3)'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=self.dtf.index,
+            y=self.dtf["recovered"],
+            name='recovered',
+            marker_color='green'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=self.dtf.index,
+            y=self.dtf["deaths"],
+            name='deaths',
+            marker_color='red'
+        ))
 
         # add slider
-        fig.update_xaxes(rangeslider_visible=True)
+        fig.update_xaxes(
+            rangeslider_visible=True
+        )
 
         # set background color
-        fig.update_layout(plot_bgcolor='white',
-                          autosize=False, width=1000, height=550)
+        fig.update_layout(
+            template='plotly_dark',
+            autosize=True,
+            #width=1000,
+            height=500
+        )
 
         # add vline
         fig.add_shape({
@@ -52,32 +83,48 @@ class Result():
             "type": "line",
             "line": {"width": 2, "dash": "dot"}
         })
-        fig.add_trace(go.Scatter(
-            x=[today],
-            y=[self.dtf["forecast"].max()],
-            text=["today"],
-            mode="text",
-            #line={"color": "green"},
-            textposition="top center",
-            hoverinfo="none",
-            showlegend=False
-        ))
+        fig.add_annotation(
+            x=today,
+            y=self.dtf["forecast"].max(),
+            text="today",
+            ax=-5,
+            ay=-20
+        )
+
         return fig
 
     def plot_active(self, today):
         # main plots
         fig = go.Figure()
+
         fig.add_trace(go.Bar(
-            x=self.dtf.index, y=self.dtf["delta_data"], name='data', marker_color='black'))
+            x=self.dtf.index, 
+            y=self.dtf["delta_data"], 
+            name='data', 
+            marker_color='orange')
+        )
+
         fig.add_trace(go.Scatter(
-            x=self.dtf.index, y=self.dtf["delta_forecast"], mode='none', name='extrapolation', fill='tozeroy'))
+            x=self.dtf.index, 
+            y=self.dtf["delta_forecast"], 
+            mode='none', 
+            name='extrapolation', 
+            fill='tozeroy',
+            fillcolor='rgba(120, 100, 170, 0.3)'
+        ))
 
         # add slider
-        fig.update_xaxes(rangeslider_visible=True)
+        fig.update_xaxes(
+            rangeslider_visible=True
+        )
 
-        # set background color
-        fig.update_layout(plot_bgcolor='white',
-                          autosize=False, width=1000, height=550)
+        # set background color      
+        fig.update_layout(
+            template='plotly_dark',
+            autosize=False,
+            #width=1000,
+            height=500
+        )
 
         # add vline
         fig.add_shape({
@@ -88,16 +135,14 @@ class Result():
             "type": "line",
             "line": {"width": 2, "dash": "dot"}
         })
-        fig.add_trace(go.Scatter(
-            x=[today],
-            y=[self.dtf["delta_forecast"].max()],
-            text=["today"],
-            mode="text",
-            #line={"color": "green"},
-            textposition="top center",
-            hoverinfo="none",
-            showlegend=False
-        ))
+        fig.add_annotation(
+            x=today,
+            y=self.dtf["delta_forecast"].max(),
+            text="today",
+            ax=-5,
+            ay=-20
+        )
+
         return fig
 
     def get_panel(self):
