@@ -8,6 +8,8 @@ class Data():
             "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", sep=",")
         self.dtf_deaths = pd.read_csv(
             "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", sep=",")
+        self.dtf_recovered = pd.read_csv(
+            "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv", sep=",")
         self.countrylist = ["World"] + \
             self.dtf_cases["Country/Region"].unique().tolist()
 
@@ -28,8 +30,18 @@ class Data():
         mortality = last_deaths / last_cases
         return mortality
 
+    @staticmethod
+    def calculate_recovery(ts_recovered, ts_cases):
+        last_recovered = ts_recovered["data"].iloc[-1]
+        last_cases = ts_cases["data"].iloc[-1]
+        recovery = last_recovered / last_cases
+        return recovery
+
     def process_data(self, country):
         self.dtf = self.group_by_country(self.dtf_cases, country)
         deaths = self.group_by_country(self.dtf_deaths, country)
         self.dtf["deaths"] = deaths
         self.mortality = self.calculate_mortality(deaths, self.dtf)
+        recovered = self.group_by_country(self.dtf_recovered, country)
+        self.dtf["recovered"] = recovered
+        self.recovery = self.calculate_recovery(recovered, self.dtf)

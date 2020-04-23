@@ -76,3 +76,10 @@ class Model():
                                                                     x[1] if np.isnan(
                                                                         x[0]) else x[0],
                                                                     axis=1)
+
+    def add_recovered(self, recovery):
+        self.dtf["recovered"] = self.dtf[["recovered", "forecast"]].apply(lambda x:
+                                                                    recovery *
+                                                                    x[1] if np.isnan(
+                                                                        x[0]) else x[0],
+                                                                    axis=1)                                                                    

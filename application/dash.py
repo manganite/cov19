@@ -53,21 +53,23 @@ app.layout = dbc.Container(fluid=True, children=[
     # Top
     html.H1(config.name, id="nav-pills"),
     navbar,
-    html.Br(), html.Br(), html.Br(),
+    html.Br(),
 
     # Body
     dbc.Row([
         ### input + panel
         dbc.Col(md=3, children=[
             inputs,
-            html.Br(), html.Br(), html.Br(),
-            html.Div(id="output-panel")
+            html.Br(),
+            html.Div(id="output-panel"),
+            html.Br()
         ]),
 
         # plots
         dbc.Col(md=9, children=[
-            dbc.Col(html.H4("Data + Extrapolation 30 days from today"),
-                    width={"size": 6, "offset": 1}),
+            #dbc.Col(html.H4("Data + Extrapolation 30 days from today")),
+            html.H4("Data + Extrapolation 30 days from today"),
+   
             dbc.Tabs(className="nav nav-pills", children=[
                 dbc.Tab(dcc.Graph(id="plot-total"), label="Total cases"),
                 dbc.Tab(dcc.Graph(id="plot-active"), label="Active cases")
@@ -97,6 +99,7 @@ def plot_total_cases(country):
     model = Model(data.dtf)
     model.forecast()
     model.add_deaths(data.mortality)
+    model.add_recovered(data.recovery)
     result = Result(model.dtf)
     return result.plot_total(model.today)
 
@@ -107,6 +110,7 @@ def plot_active_cases(country):
     model = Model(data.dtf)
     model.forecast()
     model.add_deaths(data.mortality)
+    model.add_recovered(data.recovery)
     result = Result(model.dtf)
     return result.plot_active(model.today)
 
