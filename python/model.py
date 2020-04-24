@@ -49,22 +49,33 @@ class Model():
         return dtf
 
     def forecast(self):
-        # fit
+        # fit active cases
         y = self.dtf["data"].values
         t = np.arange(len(y))
         model = self.fit_parametric(t, y, self.f, p0=[np.max(y), 1, 1])
         fitted = self.f(t, model[0], model[1], model[2])
         self.dtf["forecast"] = fitted
 
-        # forecast
-        t_ahead = np.arange(len(y)+1, len(y)+30)
-        forecast = self.forecast_parametric(model, self.f, t_ahead)
+        # forecast active cases
+        t_ahead = np.arange(len(y), len(y)+29)
+        forecast_active = self.forecast_parametric(model, self.f, t_ahead)
+
+        # fit recovered
+        y = self.dtf["recovered"].values
+        model = self.fit_parametric(t, y, self.f, p0=[np.max(y), 1, 1])
+
+        # forecast recovered
+        forecast_recovered = self.forecast_parametric(model, self.f, t_ahead)
 
         # create dtf
         self.today = self.dtf.index[-1]
         idxdates = self.generate_indexdate(start=self.today)
-        preds = pd.DataFrame(data=forecast, index=idxdates,
-                             columns=["forecast"])
+        data = {'forecast': list(forecast_active),
+                'recovered': list(forecast_recovered)}
+        preds = pd.DataFrame(
+            data=data,
+            index=idxdates
+        )
         self.dtf = self.dtf.append(preds)
 
         # add diff
@@ -76,10 +87,3 @@ class Model():
                                                                     x[1] if np.isnan(
                                                                         x[0]) else x[0],
                                                                     axis=1)
-
-    def add_recovered(self, recovery):
-        self.dtf["recovered"] = self.dtf[["recovered", "forecast"]].apply(lambda x:
-                                                                    recovery *
-                                                                    x[1] if np.isnan(
-                                                                        x[0]) else x[0],
-                                                                    axis=1)                                                                    

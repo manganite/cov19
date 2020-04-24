@@ -99,7 +99,6 @@ def plot_total_cases(country):
     model = Model(data.dtf)
     model.forecast()
     model.add_deaths(data.mortality)
-    model.add_recovered(data.recovery)
     result = Result(model.dtf)
     return result.plot_total(model.today)
 
@@ -110,7 +109,6 @@ def plot_active_cases(country):
     model = Model(data.dtf)
     model.forecast()
     model.add_deaths(data.mortality)
-    model.add_recovered(data.recovery)
     result = Result(model.dtf)
     return result.plot_active(model.today)
 
