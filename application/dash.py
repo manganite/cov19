@@ -68,11 +68,13 @@ app.layout = dbc.Container(fluid=True, children=[
         # plots
         dbc.Col(md=9, children=[
             #dbc.Col(html.H4("Data + Extrapolation 30 days from today")),
-            html.H4("Data + Extrapolation 30 days from today"),
+            html.H4("Raw data + Extrapolation 30 days from today"),
    
             dbc.Tabs(className="nav nav-pills", children=[
-                dbc.Tab(dcc.Graph(id="plot-total"), label="Total cases"),
-                dbc.Tab(dcc.Graph(id="plot-active"), label="Active cases")
+                dbc.Tab(dcc.Graph(id="plot-cumulative"), label="Cumulative data"),
+                dbc.Tab(dcc.Graph(id="plot-relative"), label="Relative data"),
+                dbc.Tab(dcc.Graph(id="plot-model"), label="Extrapolation"),
+                dbc.Tab(dcc.Graph(id="plot-daily"), label="Daily cases")
             ])
         ])
     ])
@@ -92,23 +94,42 @@ def about_active(n, active):
         return not active
     return active
 
-# Python function to plot total cases
-@app.callback(output=Output("plot-total", "figure"), inputs=[Input("country", "value")])
-def plot_total_cases(country):
+
+# Python function to plot cumulative cases
+@app.callback(output=Output("plot-cumulative", "figure"), inputs=[Input("country", "value")])
+def plot_cumulative_cases(country):
     data.process_data(country)
     model = Model(data.dtf)
-    model.forecast()
-    model.add_deaths(data.mortality)
+    model.forecast(data.mortality)
+    result = Result(model.dtf)
+    return result.plot_cumulative()
+
+
+# Python function to plot relative cases
+@app.callback(output=Output("plot-relative", "figure"), inputs=[Input("country", "value")])
+def plot_cumulative_cases(country):
+    data.process_data(country)
+    model = Model(data.dtf)
+    model.forecast(data.mortality)
+    result = Result(model.dtf)
+    return result.plot_relative()
+
+
+# Python function to plot total cases + extrapolated data
+@app.callback(output=Output("plot-model", "figure"), inputs=[Input("country", "value")])
+def plot_total_extrapolated_cases(country):
+    data.process_data(country)
+    model = Model(data.dtf)
+    model.forecast(data.mortality)
     result = Result(model.dtf)
     return result.plot_total(model.today)
 
-# Python function to plot active cases
-@app.callback(output=Output("plot-active", "figure"), inputs=[Input("country", "value")])
-def plot_active_cases(country):
+# Python function to plot daily new cases
+@app.callback(output=Output("plot-daily", "figure"), inputs=[Input("country", "value")])
+def plot_daily_new_cases(country):
     data.process_data(country)
     model = Model(data.dtf)
-    model.forecast()
-    model.add_deaths(data.mortality)
+    model.forecast(data.mortality)
     result = Result(model.dtf)
     return result.plot_active(model.today)
 
@@ -117,11 +138,10 @@ def plot_active_cases(country):
 def render_output_panel(country):
     data.process_data(country)
     model = Model(data.dtf)
-    model.forecast()
-    model.add_deaths(data.mortality)
+    model.forecast(data.mortality)
     result = Result(model.dtf)
     peak_day, num_max, total_cases_until_today, total_cases_in_30days, active_cases_today, active_cases_in_30days = result.get_panel()
-    peak_color = "white" if model.today > peak_day else "red"
+    peak_color = "white" if model.today >= peak_day else "red"
     panel = html.Div([
         html.H4(country),
         dbc.Card(body=True, className="text-white bg-primary", children=[
