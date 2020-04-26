@@ -34,7 +34,7 @@ class Result():
             x=self.dtf.index,
             y=self.dtf["data"],
             mode='markers',
-            name='data',
+            name='confirmed',
             marker_color='orange'
         ))
 
@@ -44,7 +44,14 @@ class Result():
             mode='none',
             name='extrapolation',
             fill='tozeroy',
-            fillcolor='rgba(120, 100, 170, 0.3)'
+            fillcolor='rgba(130, 80, 170, 0.3)'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=self.dtf.index,
+            y=self.dtf["active"],
+            name='active',
+            marker_color='slateblue'
         ))
 
         fig.add_trace(go.Bar(
@@ -100,7 +107,7 @@ class Result():
         fig.add_trace(go.Bar(
             x=self.dtf.index, 
             y=self.dtf["delta_data"], 
-            name='data', 
+            name='confirmed', 
             marker_color='orange')
         )
 

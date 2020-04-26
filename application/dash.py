@@ -97,8 +97,7 @@ def about_active(n, active):
 def plot_total_cases(country):
     data.process_data(country)
     model = Model(data.dtf)
-    model.forecast()
-    model.add_deaths(data.mortality)
+    model.forecast(data.mortality)
     result = Result(model.dtf)
     return result.plot_total(model.today)
 
@@ -107,8 +106,7 @@ def plot_total_cases(country):
 def plot_active_cases(country):
     data.process_data(country)
     model = Model(data.dtf)
-    model.forecast()
-    model.add_deaths(data.mortality)
+    model.forecast(data.mortality)
     result = Result(model.dtf)
     return result.plot_active(model.today)
 
@@ -117,11 +115,10 @@ def plot_active_cases(country):
 def render_output_panel(country):
     data.process_data(country)
     model = Model(data.dtf)
-    model.forecast()
-    model.add_deaths(data.mortality)
+    model.forecast(data.mortality)
     result = Result(model.dtf)
     peak_day, num_max, total_cases_until_today, total_cases_in_30days, active_cases_today, active_cases_in_30days = result.get_panel()
-    peak_color = "white" if model.today > peak_day else "red"
+    peak_color = "white" if model.today >= peak_day else "red"
     panel = html.Div([
         html.H4(country),
         dbc.Card(body=True, className="text-white bg-primary", children=[

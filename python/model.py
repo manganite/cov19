@@ -48,7 +48,7 @@ class Model():
             dtf["delta_forecast"].iloc[posx_a] + dtf["delta_forecast"].iloc[posx_b])/2
         return dtf
 
-    def forecast(self):
+    def forecast(self, mortality):
         # fit active cases
         y = self.dtf["data"].values
         t = np.arange(len(y))
@@ -81,9 +81,14 @@ class Model():
         # add diff
         self.dtf = self.add_diff(self.dtf)
 
-    def add_deaths(self, mortality):
-        self.dtf["deaths"] = self.dtf[["deaths", "forecast"]].apply(lambda x:
-                                                                    mortality *
-                                                                    x[1] if np.isnan(
-                                                                        x[0]) else x[0],
-                                                                    axis=1)
+        # add deaths
+        self.dtf["deaths"] = self.dtf[["deaths", "forecast"]].apply(
+            lambda x: mortality * x[1] if np.isnan(x[0]) else x[0],
+            axis=1
+        )
+
+        # add active
+        self.dtf["active"] = self.dtf[["active", "forecast", "recovered", "deaths"]].apply(
+            lambda x: x[1]-x[2]-x[3] if np.isnan(x[0]) else x[0],
+            axis=1
+        )

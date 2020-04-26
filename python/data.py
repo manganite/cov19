@@ -37,4 +37,6 @@ class Data():
         self.mortality = self.calculate_mortality(deaths, self.dtf)
         recovered = self.group_by_country(self.dtf_recovered, country)
         self.dtf["recovered"] = recovered
+        active = self.dtf["data"] - self.dtf["recovered"] - self.dtf["deaths"]
+        self.dtf["active"] = active
 
