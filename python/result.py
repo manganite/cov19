@@ -35,7 +35,7 @@ class Result():
             y=self.dtf["data"],
             mode='markers',
             name='confirmed',
-            marker_color='orange'
+            marker_color='slategrey'
         ))
 
         fig.add_trace(go.Scatter(
@@ -44,28 +44,28 @@ class Result():
             mode='none',
             name='extrapolation',
             fill='tozeroy',
-            fillcolor='rgba(130, 80, 170, 0.3)'
+            fillcolor='rgba(140, 80, 180, 0.25)'
         ))
 
         fig.add_trace(go.Bar(
             x=self.dtf.index,
             y=self.dtf["active"],
             name='active',
-            marker_color='slateblue'
+            marker_color='royalblue'
         ))
 
         fig.add_trace(go.Bar(
             x=self.dtf.index,
             y=self.dtf["recovered"],
             name='recovered',
-            marker_color='green'
+            marker_color='darkcyan'
         ))
 
         fig.add_trace(go.Bar(
             x=self.dtf.index,
             y=self.dtf["deaths"],
             name='deaths',
-            marker_color='red'
+            marker_color='firebrick'
         ))
 
         # add slider
@@ -75,9 +75,9 @@ class Result():
 
         # set background color
         fig.update_layout(
+            title="Extrapolation of cumulative data",
             template='plotly_dark',
             autosize=True,
-            #width=1000,
             height=500
         )
 
@@ -105,17 +105,17 @@ class Result():
         fig = go.Figure()
 
         fig.add_trace(go.Bar(
-            x=self.dtf.index, 
-            y=self.dtf["delta_data"], 
-            name='confirmed', 
-            marker_color='orange')
+            x=self.dtf.index,
+            y=self.dtf["delta_data"],
+            name='confirmed',
+            marker_color='slategrey')
         )
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index, 
-            y=self.dtf["delta_forecast"], 
-            mode='none', 
-            name='extrapolation', 
+            x=self.dtf.index,
+            y=self.dtf["delta_forecast"],
+            mode='none',
+            name='extrapolation',
             fill='tozeroy',
             fillcolor='rgba(120, 100, 170, 0.3)'
         ))
@@ -125,11 +125,11 @@ class Result():
             rangeslider_visible=True
         )
 
-        # set background color      
+        # set background color
         fig.update_layout(
+            title="Daily cases",
             template='plotly_dark',
-            autosize=False,
-            #width=1000,
+            autosize=True,
             height=500
         )
 
@@ -148,6 +148,104 @@ class Result():
             text="today",
             ax=-5,
             ay=-20
+        )
+
+        return fig
+
+    def plot_cumulative(self):
+        # main plots
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=self.dtf["deaths"][:-29],
+            name='deaths',
+            marker_color='firebrick',
+            fill='tonexty'
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=self.dtf["recovered"][:-29],
+            name='recovered',
+            marker_color='darkcyan',
+            fill='tonexty'
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=self.dtf["active"][:-29],
+            name='active',
+            marker_color='royalblue',
+            fill='tonexty'
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=self.dtf["data"][:-29],
+            name='confirmed',
+            marker_color='slategrey',
+            fill='tonexty'
+        ))
+
+        # add slider
+        fig.update_xaxes(
+            rangeslider_visible=True
+        )
+
+        # set background color
+        fig.update_layout(
+            title="Cumulative data",
+            template='plotly_dark',
+            autosize=True,
+            height=500
+        )
+
+        return fig
+
+    def plot_relative(self):
+        # main plots
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=100*self.dtf["deaths"][:-29]/self.dtf["data"][:-29],
+            name='deaths',
+            mode='lines',
+            marker_color='firebrick',
+            stackgroup='one'
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=100*self.dtf["recovered"][:-29]/self.dtf["data"][:-29],
+            name='recovered',
+            mode='lines',
+            marker_color='darkcyan',
+            stackgroup='one'
+        ))
+
+        fig.add_trace(go.Scatter(
+            x=self.dtf.index[:-29],
+            y=100*self.dtf["active"][:-29]/self.dtf["data"][:-29],
+            name='active',
+            mode='lines',
+            marker_color='royalblue',
+            stackgroup='one'
+        ))
+
+        # add slider
+        fig.update_xaxes(
+            rangeslider_visible=True
+        )
+
+        # set background color
+        fig.update_layout(
+            title="Relative data",
+            template='plotly_dark',
+            autosize=True,
+            height=500,
+            yaxis=dict(type='linear', range=[0, 100], ticksuffix='% ')
         )
 
         return fig
