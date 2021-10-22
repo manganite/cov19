@@ -1,10 +1,10 @@
 # Setup
-import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
 
+import dash
+from dash.dependencies import Input, Output, State
 from python.data import Data
 from python.model import Model
 from python.result import Result
@@ -69,9 +69,10 @@ app.layout = dbc.Container(fluid=True, children=[
         dbc.Col(md=9, children=[
             #dbc.Col(html.H4("Data + Extrapolation 30 days from today")),
             html.H4("Raw data + Extrapolation 30 days from today"),
-   
+
             dbc.Tabs(className="nav nav-pills", children=[
-                dbc.Tab(dcc.Graph(id="plot-cumulative"), label="Cumulative data"),
+                dbc.Tab(dcc.Graph(id="plot-cumulative"),
+                        label="Cumulative data"),
                 dbc.Tab(dcc.Graph(id="plot-relative"), label="Relative data"),
                 dbc.Tab(dcc.Graph(id="plot-model"), label="Extrapolation"),
                 dbc.Tab(dcc.Graph(id="plot-daily"), label="Daily cases")

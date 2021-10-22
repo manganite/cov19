@@ -39,4 +39,3 @@ class Data():
         self.dtf["recovered"] = recovered
         active = self.dtf["data"] - self.dtf["recovered"] - self.dtf["deaths"]
         self.dtf["active"] = active
-
