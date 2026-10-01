@@ -96,7 +96,13 @@ async function load(slug) {
       if (!res.ok) throw new Error(res.status);
       cache[slug] = await res.json();
     } catch (err) {
-      if (select.value === slug) status.textContent = `Could not load data (${err.message}).`;
+      if (select.value === slug) {
+        status.textContent = `Could not load data (${err.message}).`;
+        // Do not leave the previous country on screen under the new name.
+        current = null;
+        document.getElementById("panel").innerHTML = "";
+        Plotly.purge("plot");
+      }
       return;
     }
   }

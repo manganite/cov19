@@ -23,6 +23,7 @@ from python.result import Result
 from settings import about, config
 
 ROOT = Path(__file__).resolve().parent
+MARKER = ".cov19-static-site"
 
 
 def slugify(name):
@@ -67,9 +68,14 @@ def country_payload(data, country):
 
 def main(out_dir):
     out = Path(out_dir)
+    # Only wipe a directory this script created, so a mistyped path such as
+    # "." cannot delete the repository.
     if out.exists():
+        if not (out / MARKER).exists() and any(out.iterdir()):
+            sys.exit(f"refusing to overwrite {out}: not empty and not created by build_static.py")
         shutil.rmtree(out)
     (out / "data").mkdir(parents=True)
+    (out / MARKER).touch()
 
     data = Data()
     data.get_data()

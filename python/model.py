@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 from scipy import optimize
 
+# Number of days extrapolated beyond the last data point.
+HORIZON = 30
+
 
 class Model():
 
@@ -34,7 +37,7 @@ class Model():
 
     @staticmethod
     def generate_indexdate(start):
-        index = pd.date_range(start=start, periods=30, freq="D")
+        index = pd.date_range(start=start, periods=HORIZON+1, freq="D")
         index = index[1:]
         return index
 
@@ -67,7 +70,7 @@ class Model():
         self.dtf["forecast"] = fitted
 
         # forecast active cases
-        t_ahead = np.arange(len(y), len(y)+29)
+        t_ahead = np.arange(len(y), len(y)+HORIZON)
         forecast_active = self.forecast_parametric(model, self.f, t_ahead)
 
         # fit recovered
