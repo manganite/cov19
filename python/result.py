@@ -93,7 +93,7 @@ class Result():
         fig.add_annotation(
             x=today,
             y=self.dtf["forecast"].max(),
-            text="today",
+            text="end of data",
             ax=-5,
             ay=-20
         )
@@ -145,7 +145,7 @@ class Result():
         fig.add_annotation(
             x=today,
             y=self.dtf["delta_forecast"].max(),
-            text="today",
+            text="end of data",
             ax=-5,
             ay=-20
         )

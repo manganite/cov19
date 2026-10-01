@@ -1,5 +1,7 @@
 import pandas as pd
 
+from settings import config
+
 
 class Data():
 
@@ -19,7 +21,8 @@ class Data():
                        axis=1).groupby("Country/Region").sum().T
         dtf["World"] = dtf.sum(axis=1)
         dtf = dtf[country]
-        dtf.index = pd.to_datetime(dtf.index, infer_datetime_format=True)
+        dtf.index = pd.to_datetime(dtf.index, format="%m/%d/%y")
+        dtf = dtf[:config.end_date]
         ts = pd.DataFrame(index=dtf.index, data=dtf.values, columns=["data"])
         return ts
 
@@ -33,9 +36,9 @@ class Data():
     def process_data(self, country):
         self.dtf = self.group_by_country(self.dtf_cases, country)
         deaths = self.group_by_country(self.dtf_deaths, country)
-        self.dtf["deaths"] = deaths
+        self.dtf["deaths"] = deaths["data"]
         self.mortality = self.calculate_mortality(deaths, self.dtf)
         recovered = self.group_by_country(self.dtf_recovered, country)
-        self.dtf["recovered"] = recovered
+        self.dtf["recovered"] = recovered["data"]
         active = self.dtf["data"] - self.dtf["recovered"] - self.dtf["deaths"]
         self.dtf["active"] = active
