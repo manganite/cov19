@@ -68,8 +68,10 @@ const fmt = n => Math.round(n).toLocaleString("en-US");
 
 function renderPanel(p, name) {
   const peakColor = p.peak_passed ? "white" : "var(--bs-danger)";
+  // Only numbers and dates are interpolated into the markup; the country
+  // name comes from the downloaded dataset and is set as text below.
   document.getElementById("panel").innerHTML = `
-    <h4>${name}</h4>
+    <h4></h4>
     <div class="card text-white bg-primary"><div class="card-body">
       <h6>Total cases until ${END_DATE}:</h6><h3>${fmt(p.total_cases_until_today)}</h3>
       <h6 class="text-danger">Total cases in 30 days:</h6><h3 class="text-danger">${fmt(p.total_cases_in_30days)}</h3>
@@ -78,6 +80,7 @@ function renderPanel(p, name) {
       <h6 style="color:${peakColor}">Peak day:</h6><h3 style="color:${peakColor}">${p.peak_day}</h3>
       <h6 style="color:${peakColor}">with ${fmt(p.peak_cases)} cases</h6>
     </div></div>`;
+  document.querySelector("#panel h4").textContent = name;
 }
 
 function renderPlot() {

@@ -30,6 +30,12 @@ def slugify(name):
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 
+def script_json(value):
+    # Country names come from the downloaded CSV. Escaping "<" keeps a value
+    # such as "</script>" from closing the inline script it is embedded in.
+    return json.dumps(value).replace("<", "\\u003c")
+
+
 def figure_json(fig):
     # The dark template is identical for every figure, so it is shipped once
     # in index.html instead of being repeated in each of ~800 figures.
@@ -102,8 +108,8 @@ def main(out_dir):
              .replace("__ABOUT__", about.txt)
              .replace("__DATA_URL__", config.data)
              .replace("__CODE_URL__", config.code)
-             .replace("__COUNTRIES__", json.dumps(countries))
-             .replace("__TEMPLATE__", json.dumps(template_layout)))
+             .replace("__COUNTRIES__", script_json(countries))
+             .replace("__TEMPLATE__", script_json(template_layout)))
     (out / "index.html").write_text(index)
 
     plotly_js = Path(plotly.__file__).parent / "package_data" / "plotly.min.js"
