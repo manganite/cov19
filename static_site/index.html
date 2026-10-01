@@ -73,8 +73,8 @@ function renderPanel(p, name) {
     <div class="card text-white bg-primary"><div class="card-body">
       <h6>Total cases until ${END_DATE}:</h6><h3>${fmt(p.total_cases_until_today)}</h3>
       <h6 class="text-danger">Total cases in 30 days:</h6><h3 class="text-danger">${fmt(p.total_cases_in_30days)}</h3>
-      <h6>Active cases on ${END_DATE}:</h6><h3>${fmt(p.active_cases_today)}</h3>
-      <h6 class="text-danger">Active cases in 30 days:</h6><h3 class="text-danger">${fmt(p.active_cases_in_30days)}</h3>
+      <h6>New cases on ${END_DATE}:</h6><h3>${fmt(p.new_cases_today)}</h3>
+      <h6 class="text-danger">New cases per day in 30 days:</h6><h3 class="text-danger">${fmt(p.new_cases_in_30days)}</h3>
       <h6 style="color:${peakColor}">Peak day:</h6><h3 style="color:${peakColor}">${p.peak_day}</h3>
       <h6 style="color:${peakColor}">with ${fmt(p.peak_cases)} cases</h6>
     </div></div>`;
@@ -96,10 +96,12 @@ async function load(slug) {
       if (!res.ok) throw new Error(res.status);
       cache[slug] = await res.json();
     } catch (err) {
-      status.textContent = `Could not load data (${err.message}).`;
+      if (select.value === slug) status.textContent = `Could not load data (${err.message}).`;
       return;
     }
   }
+  // A slower request for an earlier selection must not overwrite a newer one.
+  if (select.value !== slug) return;
   status.textContent = "";
   current = cache[slug];
   renderPanel(current.panel, current.country);

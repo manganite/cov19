@@ -12,8 +12,14 @@ class Data():
             "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", sep=",")
         self.dtf_recovered = pd.read_csv(
             "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv", sep=",")
-        self.countrylist = ["World"] + \
-            self.dtf_cases["Country/Region"].unique().tolist()
+        # Countries and events with no confirmed case by end_date (they only
+        # appear in later data) have nothing to fit and are left out.
+        confirmed = self.dtf_cases.drop(['Province/State', 'Lat', 'Long'],
+                                        axis=1).groupby("Country/Region").sum().T
+        confirmed.index = pd.to_datetime(confirmed.index, format="%m/%d/%y")
+        last = confirmed[:config.end_date].iloc[-1]
+        self.countrylist = ["World"] + [
+            c for c in self.dtf_cases["Country/Region"].unique() if last[c] > 0]
 
     @staticmethod
     def group_by_country(dtf, country):

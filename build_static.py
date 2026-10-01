@@ -15,6 +15,7 @@ from pathlib import Path
 
 import plotly
 import plotly.io as pio
+from scipy.optimize import OptimizeWarning
 
 from python.data import Data
 from python.model import Model
@@ -53,8 +54,10 @@ def country_payload(data, country):
         "panel": {
             "total_cases_until_today": float(total_today),
             "total_cases_in_30days": float(total_30),
-            "active_cases_today": float(active_today),
-            "active_cases_in_30days": float(active_30),
+            # Result.calculate_max returns daily new cases (delta_data and
+            # delta_forecast) under the "active" names, so they are renamed here.
+            "new_cases_today": float(active_today),
+            "new_cases_in_30days": float(active_30),
             "peak_day": peak_day.strftime("%Y-%m-%d"),
             "peak_cases": float(num_max),
             "peak_passed": bool(model.today >= peak_day),
@@ -73,10 +76,12 @@ def main(out_dir):
 
     countries = []
     for country in data.countrylist:
-        # curve_fit warns about overflow in exp() while it explores the
-        # parameter space; the converged fits are unaffected.
+        # curve_fit overflows exp() while it explores the parameter space and
+        # cannot estimate a covariance for some fits; neither affects the
+        # returned parameters. All other warnings stay visible.
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+            warnings.filterwarnings("ignore", message="overflow encountered in exp", category=RuntimeWarning)
+            warnings.filterwarnings("ignore", category=OptimizeWarning)
             payload = country_payload(data, country)
         slug = slugify(country)
         (out / "data" / f"{slug}.json").write_text(json.dumps(payload, separators=(",", ":")))

@@ -152,11 +152,11 @@ def render_output_panel(country):
             html.H3("{:,.0f}".format(total_cases_in_30days),
                     className="text-danger"),
 
-            html.H6("Active cases on " + config.end_date + ":", style={"color": "white"}),
+            html.H6("New cases on " + config.end_date + ":", style={"color": "white"}),
             html.H3("{:,.0f}".format(active_cases_today),
                     style={"color": "white"}),
 
-            html.H6("Active cases in 30 days:", className="text-danger"),
+            html.H6("New cases per day in 30 days:", className="text-danger"),
             html.H3("{:,.0f}".format(active_cases_in_30days),
                     className="text-danger"),
 
