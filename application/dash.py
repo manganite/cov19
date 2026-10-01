@@ -1,10 +1,8 @@
 # Setup
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
 
 import dash
-from dash.dependencies import Input, Output, State
+from dash import Input, Output, State, dcc, html
 from python.data import Data
 from python.model import Model
 from python.result import Result
@@ -42,10 +40,10 @@ navbar = dbc.Nav(className="nav nav-pills", children=[
 ])
 
 # Input
-inputs = dbc.FormGroup([
+inputs = html.Div([
     html.H4("Select Country"),
     dcc.Dropdown(id="country", options=[
-                 {"label": x, "value": x} for x in data.countrylist], value="World")
+                 {"label": x, "value": x} for x in data.countrylist], value="World", clearable=False)
 ])
 
 # App Layout
@@ -68,7 +66,7 @@ app.layout = dbc.Container(fluid=True, children=[
         # plots
         dbc.Col(md=9, children=[
             #dbc.Col(html.H4("Data + Extrapolation 30 days from today")),
-            html.H4("Raw data + Extrapolation 30 days from today"),
+            html.H4("Raw data + Extrapolation 30 days from " + config.end_date),
 
             dbc.Tabs(className="nav nav-pills", children=[
                 dbc.Tab(dcc.Graph(id="plot-cumulative"),
@@ -146,7 +144,7 @@ def render_output_panel(country):
     panel = html.Div([
         html.H4(country),
         dbc.Card(body=True, className="text-white bg-primary", children=[
-            html.H6("Total cases until today:", style={"color": "white"}),
+            html.H6("Total cases until " + config.end_date + ":", style={"color": "white"}),
             html.H3("{:,.0f}".format(total_cases_until_today),
                     style={"color": "white"}),
 
@@ -154,11 +152,11 @@ def render_output_panel(country):
             html.H3("{:,.0f}".format(total_cases_in_30days),
                     className="text-danger"),
 
-            html.H6("Active cases today:", style={"color": "white"}),
+            html.H6("New cases on " + config.end_date + ":", style={"color": "white"}),
             html.H3("{:,.0f}".format(active_cases_today),
                     style={"color": "white"}),
 
-            html.H6("Active cases in 30 days:", className="text-danger"),
+            html.H6("New cases per day in 30 days:", className="text-danger"),
             html.H3("{:,.0f}".format(active_cases_in_30days),
                     className="text-danger"),
 

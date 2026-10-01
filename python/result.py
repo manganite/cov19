@@ -1,6 +1,8 @@
 import pandas as pd
 import plotly.graph_objects as go
 
+from python.model import HORIZON
+
 
 class Result():
 
@@ -20,9 +22,9 @@ class Result():
 
     @staticmethod
     def calculate_max(dtf):
-        total_cases_until_today = dtf["data"].iat[-30]
+        total_cases_until_today = dtf["data"].iat[-HORIZON-1]
         total_cases_in_30days = dtf["forecast"].iat[-1]
-        active_cases_today = dtf["delta_data"].iat[-30]
+        active_cases_today = dtf["delta_data"].iat[-HORIZON-1]
         active_cases_in_30days = dtf["delta_forecast"].iat[-1]
         return total_cases_until_today, total_cases_in_30days, active_cases_today, active_cases_in_30days
 
@@ -93,7 +95,7 @@ class Result():
         fig.add_annotation(
             x=today,
             y=self.dtf["forecast"].max(),
-            text="today",
+            text="end of data",
             ax=-5,
             ay=-20
         )
@@ -145,7 +147,7 @@ class Result():
         fig.add_annotation(
             x=today,
             y=self.dtf["delta_forecast"].max(),
-            text="today",
+            text="end of data",
             ax=-5,
             ay=-20
         )
@@ -157,32 +159,32 @@ class Result():
         fig = go.Figure()
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=self.dtf["deaths"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=self.dtf["deaths"][:-HORIZON],
             name='deaths',
             marker_color='firebrick',
             fill='tonexty'
         ))
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=self.dtf["recovered"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=self.dtf["recovered"][:-HORIZON],
             name='recovered',
             marker_color='darkcyan',
             fill='tonexty'
         ))
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=self.dtf["active"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=self.dtf["active"][:-HORIZON],
             name='active',
             marker_color='royalblue',
             fill='tonexty'
         ))
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=self.dtf["data"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=self.dtf["data"][:-HORIZON],
             name='confirmed',
             marker_color='slategrey',
             fill='tonexty'
@@ -208,8 +210,8 @@ class Result():
         fig = go.Figure()
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=100*self.dtf["deaths"][:-29]/self.dtf["data"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=100*self.dtf["deaths"][:-HORIZON]/self.dtf["data"][:-HORIZON],
             name='deaths',
             mode='lines',
             marker_color='firebrick',
@@ -217,8 +219,8 @@ class Result():
         ))
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=100*self.dtf["recovered"][:-29]/self.dtf["data"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=100*self.dtf["recovered"][:-HORIZON]/self.dtf["data"][:-HORIZON],
             name='recovered',
             mode='lines',
             marker_color='darkcyan',
@@ -226,8 +228,8 @@ class Result():
         ))
 
         fig.add_trace(go.Scatter(
-            x=self.dtf.index[:-29],
-            y=100*self.dtf["active"][:-29]/self.dtf["data"][:-29],
+            x=self.dtf.index[:-HORIZON],
+            y=100*self.dtf["active"][:-HORIZON]/self.dtf["data"][:-HORIZON],
             name='active',
             mode='lines',
             marker_color='royalblue',

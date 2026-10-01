@@ -1,5 +1,7 @@
 import pandas as pd
 
+from settings import config
+
 
 class Data():
 
@@ -10,8 +12,14 @@ class Data():
             "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", sep=",")
         self.dtf_recovered = pd.read_csv(
             "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv", sep=",")
-        self.countrylist = ["World"] + \
-            self.dtf_cases["Country/Region"].unique().tolist()
+        # Countries and events with no confirmed case by end_date (they only
+        # appear in later data) have nothing to fit and are left out.
+        confirmed = self.dtf_cases.drop(['Province/State', 'Lat', 'Long'],
+                                        axis=1).groupby("Country/Region").sum().T
+        confirmed.index = pd.to_datetime(confirmed.index, format="%m/%d/%y")
+        last = confirmed[:config.end_date].iloc[-1]
+        self.countrylist = ["World"] + [
+            c for c in self.dtf_cases["Country/Region"].unique() if last[c] > 0]
 
     @staticmethod
     def group_by_country(dtf, country):
@@ -19,7 +27,8 @@ class Data():
                        axis=1).groupby("Country/Region").sum().T
         dtf["World"] = dtf.sum(axis=1)
         dtf = dtf[country]
-        dtf.index = pd.to_datetime(dtf.index, infer_datetime_format=True)
+        dtf.index = pd.to_datetime(dtf.index, format="%m/%d/%y")
+        dtf = dtf[:config.end_date]
         ts = pd.DataFrame(index=dtf.index, data=dtf.values, columns=["data"])
         return ts
 
@@ -33,9 +42,9 @@ class Data():
     def process_data(self, country):
         self.dtf = self.group_by_country(self.dtf_cases, country)
         deaths = self.group_by_country(self.dtf_deaths, country)
-        self.dtf["deaths"] = deaths
+        self.dtf["deaths"] = deaths["data"]
         self.mortality = self.calculate_mortality(deaths, self.dtf)
         recovered = self.group_by_country(self.dtf_recovered, country)
-        self.dtf["recovered"] = recovered
+        self.dtf["recovered"] = recovered["data"]
         active = self.dtf["data"] - self.dtf["recovered"] - self.dtf["deaths"]
         self.dtf["active"] = active

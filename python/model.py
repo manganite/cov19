@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 from scipy import optimize
 
+# Number of days extrapolated beyond the last data point.
+HORIZON = 30
+
 
 class Model():
 
@@ -15,8 +18,17 @@ class Model():
 
     @staticmethod
     def fit_parametric(X, y, f, p0):
-        model, cov = optimize.curve_fit(f, X, y, maxfev=10000, p0=p0)
-        return model
+        # The default guess (rate 1/day, midpoint at day 1) fails to converge
+        # for countries still in exponential growth at the end of the data.
+        # Retry with a slow rate and a midpoint beyond the last data point.
+        fallbacks = [[2*np.max(y), 0.05, len(y)], [10*np.max(y), 0.05, len(y)+60]]
+        for guess in [p0] + fallbacks:
+            try:
+                model, cov = optimize.curve_fit(f, X, y, maxfev=10000, p0=guess)
+                return model
+            except RuntimeError:
+                continue
+        raise RuntimeError("logistic fit did not converge for any initial guess")
 
     @staticmethod
     def forecast_parametric(model, f, X):
@@ -25,7 +37,7 @@ class Model():
 
     @staticmethod
     def generate_indexdate(start):
-        index = pd.date_range(start=start, periods=30, freq="D")
+        index = pd.date_range(start=start, periods=HORIZON+1, freq="D")
         index = index[1:]
         return index
 
@@ -36,16 +48,17 @@ class Model():
         dtf["delta_forecast"] = dtf["forecast"] - dtf["forecast"].shift(1)
 
         # fill Nas
-        dtf["delta_data"] = dtf["delta_data"].fillna(method='bfill')
-        dtf["delta_forecast"] = dtf["delta_forecast"].fillna(method='bfill')
+        dtf["delta_data"] = dtf["delta_data"].bfill()
+        dtf["delta_forecast"] = dtf["delta_forecast"].bfill()
 
         # interpolate outlier
         idx = dtf[pd.isnull(dtf["data"])]["delta_forecast"].index[0]
         posx = dtf.index.tolist().index(idx)
         posx_a = posx - 1
         posx_b = posx + 1
-        dtf["delta_forecast"].iloc[posx] = (
-            dtf["delta_forecast"].iloc[posx_a] + dtf["delta_forecast"].iloc[posx_b])/2
+        col = dtf.columns.get_loc("delta_forecast")
+        dtf.iloc[posx, col] = (
+            dtf.iloc[posx_a, col] + dtf.iloc[posx_b, col])/2
         return dtf
 
     def forecast(self, mortality):
@@ -57,7 +70,7 @@ class Model():
         self.dtf["forecast"] = fitted
 
         # forecast active cases
-        t_ahead = np.arange(len(y), len(y)+29)
+        t_ahead = np.arange(len(y), len(y)+HORIZON)
         forecast_active = self.forecast_parametric(model, self.f, t_ahead)
 
         # fit recovered
@@ -76,19 +89,15 @@ class Model():
             data=data,
             index=idxdates
         )
-        self.dtf = self.dtf.append(preds)
+        self.dtf = pd.concat([self.dtf, preds])
 
         # add diff
         self.dtf = self.add_diff(self.dtf)
 
         # add deaths
-        self.dtf["deaths"] = self.dtf[["deaths", "forecast"]].apply(
-            lambda x: mortality * x[1] if np.isnan(x[0]) else x[0],
-            axis=1
-        )
+        self.dtf["deaths"] = self.dtf["deaths"].fillna(
+            mortality * self.dtf["forecast"])
 
         # add active
-        self.dtf["active"] = self.dtf[["active", "forecast", "recovered", "deaths"]].apply(
-            lambda x: x[1]-x[2]-x[3] if np.isnan(x[0]) else x[0],
-            axis=1
-        )
+        self.dtf["active"] = self.dtf["active"].fillna(
+            self.dtf["forecast"] - self.dtf["recovered"] - self.dtf["deaths"])
