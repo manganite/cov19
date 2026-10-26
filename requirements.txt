@@ -64,8 +64,6 @@ retrying==1.4.2
     # via dash
 scipy==1.18.1
     # via -r requirements.in
-setuptools==84.0.0
-    # via dash
 six==1.17.0
     # via python-dateutil
 typing-extensions==4.16.0
