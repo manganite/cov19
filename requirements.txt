@@ -4,7 +4,7 @@ annotated-types==0.8.0
     # via pydantic
 blinker==1.9.0
     # via flask
-certifi==2026.7.22
+certifi==2026.10.19
     # via requests
 charset-normalizer==3.5.2
     # via requests
@@ -64,8 +64,6 @@ retrying==1.4.2
     # via dash
 scipy==1.18.1
     # via -r requirements.in
-setuptools==84.0.0
-    # via dash
 six==1.17.0
     # via python-dateutil
 typing-extensions==4.16.0
